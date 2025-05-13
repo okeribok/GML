@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Literacy Adventure</title>
+    <style>
+        /* Base Styles */
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --accent: #e74c3c;
+            --dark: #34495e;
+            --light: #ecf0f1;
+            --text: #2c3e50;
+            --gold: #f1c40f;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .choice-btn {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .perspective-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        
+        .perspective-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .timer {
+            font-size: 14px;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        /* Perspective-specific styles */
+        .decision-maker {
+            border-color: #3498db;
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .concepts-explorer {
+            border-color: #2ecc71;
+            background-color: rgba(46, 204, 113, 0.1);
+        }
+        
+        .ethics-navigator {
+            border-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .media-detective {
+            border-color: #f39c12;
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        /* GAMIFICATION ELEMENTS */
+        .resource-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: var(--dark);
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .insight-points {
+            display: flex;
+            align-items: center;
+        }
+        
+        .insight-icon {
+            width: 20px;
+            height: 20px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        
+        .skill-tree-container {
+            margin-top: 20px;
+            position: relative;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+        
+        .skill-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .skill-node.unlocked {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+        
+        .skill-node.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.8);
+        }
+        
+        .skill-connection {
+            position: absolute;
+            height: 2px;
+            background-color: #aaa;
+            transform-origin: left center;
+        }
+        
+        .skill-connection.unlocked {
+            background-color: var(--primary);
+        }
+        
+        .mission-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mission-card::before {
+            content: "MISSION";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 10px;
+            background-color: var(--accent);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .character {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--primary);
+            padding-left: 10px;
+        }
+        
+        .character-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--light);
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .character-message {
+            flex: 1;
+            font-style: italic;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .hint-button {
+            background-color: var(--gold);
+            color: var(--dark);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .hint-button:hover {
+            background-color: #e6b91f;
+        }
+        
+        .hint-cost {
+            background-color: rgba(0,0,0,0.1);
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        
+        .hint-content {
+            background-color: rgba(241, 196, 15, 0.1);
+            border-left: 3px solid var(--gold);
+            padding: 10px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .choice-consequence {
+            font-size: 12px;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+        
+        .badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        /* Animation for gaining points */
+        @keyframes pointGain {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .point-animation {
+            animation: pointGain 0.5s ease;
+        }
+        
+        /* Notification popup */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--dark);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 100;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="notification" id="notification">Points earned!</div>
+    <div class="container" id="app">
+        <!-- Welcome Screen -->
+        <div class="screen active" id="welcome-screen">
+            <h1>AI Implementation Adventure</h1>
+            <div class="mission-card">
+                <h3>Mission Briefing</h3>
+                <p>As the newly appointed AI Implementation Specialist at GlobalTech Corp, your mission is to navigate the complex world of artificial intelligence and guide the company to success.</p>
+                <p>Choose your approach wisely - your decisions will affect the company's AI journey!</p>
+            </div>
+            
+            <div class="skill-tree-container" id="skill-tree">
+                <!-- Will be populated by JS -->
+            </div>
+            
+            <h3>Choose Your Mission:</h3>
+            
+            <div class="perspective-card decision-maker" onclick="startPerspective('decision-maker')">
+                <h3>Strategic Planning</h3>
+                <p>Guide executives on AI implementation decisions for maximum business impact.</p>
+                <small>Mission Type: Strategy | Difficulty: ★★☆</small>
+            </div>
+            
+            <div class="perspective-card concepts-explorer" onclick="startPerspective('concepts-explorer')">
+                <h3>Knowledge Acquisition</h3>
+                <p>Explore core AI concepts to build your technical foundation.</p>
+                <small>Mission Type: Learning | Difficulty: ★☆☆</small>
+            </div>
+            
+            <div class="perspective-card ethics-navigator" onclick="startPerspective('ethics-navigator')">
+                <h3>Ethics Investigation</h3>
+                <p>Navigate complex ethical dilemmas to maintain company values.</p>
+                <small>Mission Type: Evaluation | Difficulty: ★★★</small>
+            </div>
+            
+            <div class="perspective-card media-detective" onclick="startPerspective('media-detective')">
+                <h3>Content Analysis</h3>
+                <p>Train your skills in detecting AI-generated materials.</p>
+                <small>Mission Type: Analysis | Difficulty: ★★☆</small>
+            </div>
+        </div>
+        
+        <!-- Decision Maker Screens -->
+        <div class="screen" id="decision-maker-1">
+            <div class="resource-bar">
+                <div class="insight-points"><span class="insight-icon"></span> <span id="points-display">0</span> Insight Points</div>
+                <div class="mission-progress">Mission: 1/3</div>
+            </div>
+            
+            <div class="progress-bar"><div class="progress" id="dm-progress"></div></div>
+            <div class="timer" id="dm-timer">Time: 0s</div>
+            
+            <div class="mission-card">
+                <h3>Customer Service AI Strategy</h3>
+                <div class="character">
+                    <div class="character-icon">VP</div>
+                    <div class="character-message">"Our competitors are using AI for customer service. We need a strategy but I'm concerned about customer satisfaction. What's your recommendation?"</div>
+                </div>
+            </div>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('a', 1)">
+                Implement a fully automated chatbot to handle all customer inquiries
+                <div class="choice-consequence">Fast implementation, major cost savings</div>
+            </button>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('b', 1)">
+                Deploy an AI assistant to help human agents handle routine queries
+                <div class="choice-consequence">Balanced approach, moderate cost savings</div>
+            </button>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('c', 1)">
+                Use AI analytics to identify common issues, but keep human-only support
+                <div class="choice-consequence">Customer-focused, minimal savings</div>
+            </button>
+            
+            <button class="hint-button" onclick="showHint('dm-hint-1')">
+                Get Strategic Insight <span class="hint-cost">5 points</span>
+            </button>
+            <div class="hint-content" id="dm-hint-1">
+                Fully automated systems can handle volume but may frustrate complex cases. Hybrid approaches typically maintain higher customer satisfaction rates.
+            </div>
+        </div>
+        
+        <div class="screen" id="decision-maker-2">
+            <div class="resource-bar">
+                <div class="insight-points"><span class="insight-icon"></span> <span id="points-display-2">0</span> Insight Points</div>
+                <div class="mission-progress">Mission: 2/3</div>
+            </div>
+            
+            <div class="progress-bar"><div class="progress" id="dm-progress-2"></div></div>
+            <div class="timer" id="dm-timer-2">Time: 0s</div>
+            
+            <div class="mission-card">
+                <h3>Marketing AI Initiative</h3>
+                <div id="dm-feedback"></div>
+                <div class="character">
+                    <div class="character-icon">CM</div>
+                    <div class="character-message" id="cm-message">"Our marketing team is intrigued by generative AI. How should we approach this new technology?"</div>
+                </div>
+            </div>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('a', 2)">
+                Replace creative team with AI-generated content to reduce costs
+                <div class="choice-consequence">Maximum efficiency, potential quality issues</div>
+            </button>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('b', 2)">
+                Use AI to generate ideas, but have humans refine and approve
+                <div class="choice-consequence">Collaborative approach, moderate efficiency</div>
+            </button>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('c', 2)">
+                Reject AI for creative work, only use for data analysis
+                <div class="choice-consequence">Conservative approach, minimal disruption</div>
+            </button>
+            
+            <button class="hint-button" onclick="showHint('dm-hint-2')">
+                Get Creative Insight <span class="hint-cost">5 points</span>
+            </button>
+            <div class="hint-content" id="dm-hint-2">
+                AI excels at generating variations but can struggle with originality and brand voice. Many successful implementations use it as a collaborative tool rather than replacement.
+            </div>
+        </div>
+        
+        <div class="screen" id="decision-maker-3">
+            <div class="resource-bar">
+                <div class="insight-points"><span class="insight-icon"></span> <span id="points-display-3">0</span> Insight Points</div>
+                <div class="mission-progress">Mission: 3/3</div>
+            </div>
+            
+            <div class="progress-bar"><div class="progress" id="dm-progress-3"></div></div>
+            <div class="timer" id="dm-timer-3">Time: 0s</div>
+            
+            <div class="mission-card">
+                <h3>Results & Analysis</h3>
+                <div id="dm-feedback-2"></div>
+                <div id="decision-outcome" class="character">
+                    <div class="character-icon">CEO</div>
+                    <div class="character-message" id="decision-outcome-message">
+                        "Your strategic vision for AI implementation has helped shape our approach. Here's how your decisions played out..."
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Mission Complete!</h3>
+            <p id="dm-mission-summary">Your balanced approach to AI implementation has positioned the company for success.</p>
+            
+            <div class="footer">
+                <button onclick="showWelcomeWithStatus()">Return to HQ</button>
+                <button onclick="shareResults()">Share Mission Report</button>
+            </div>
+        </div>
+
+        <!-- Concepts Explorer Screens -->
+        <div class="screen" id="concepts-explorer-1">
+            <div class="resource-bar">
+                <div class="insight-points"><span class="insight-icon"></span> <span id="ce-points-display">0</span> Insight Points</div>
+                <div class="mission-progress">Mission: 1/3</div>
+            </div>
+            
+            <div class="progress-bar"><div class="progress" id="ce-progress"></div></div>
+            <div class="timer" id="ce-timer">Time: 0s</div>
+            
+            <div class="mission-card">
+                <h3>Technical Knowledge Acquisition</h3>
+                <div class="character">
+                    <div class="character-icon">CTO</div>
+                    <div class="character-message">"To drive our AI strategy, you'll need to understand the core technologies. Which area would you like to explore first?"</div>
+                </div>
+            </div>
+            
+            <button class="choice-btn" onclick="conceptsChoice('generative')">
+                Generative AI (Creating new content)
+                <div class="choice-consequence">Unlocks creative implementation options</div>
+            </button>
+            
+            <button class="choice-btn" onclick="conceptsChoice('machine')">
+                Machine Learning (Pattern recognition)
+                <div class="choice-consequence">Unlocks analytical implementation options</div>
+            </button>
+            
+            <button class="choice-btn" onclick="conceptsChoice('nlp')">
+                Natural Language Processing (Understanding text)
+                <div class="choice-consequence">Unlocks communication implementation options</div>
+            </button>
+            
+            <button class="hint-button" onclick="showHint('ce-hint-1')">
+                Get Research Insight <span class="hint-cost">5 points</span>
+            </button>
+            <div class="hint-content" id="ce-hint-1">
+                For organizations just starting with AI, understanding generative AI often provides the most immediate business applications and visible results.
+            </div>
+        </div>
+        
+        <div class="screen" id="concepts-explorer-2">
+            <div class="resource-bar">
+                <div class="insight-points"><span class="insight-icon"></span> <span id="ce-points-display-2">0</span> Insight Points</div>
+                <div class="mission-progress">Mission: 2/3</div>
+            </div>
+            
+            <div class="progress-bar"><div class="progress" id="ce-progress-2"></div></div>
+            <div class="timer" id="ce-timer-2">Time: 0s</div>
+            
+            <div class="mission-card">
+                <h3>Knowledge Deep Dive</h3>
+                <div class="character">
+                    <div class="character-icon">CTO</div>
+                    <div class="character-message">"Excellent choice. Let's explore this technology in depth."</div>
+                </div>
+                <div id="concept-content">
+                    <!-- Content will be inserted here by JS -->
+                </div>
+            </div>
+            
+            <button onclick="showConceptQuiz()">Apply Your Knowledge</button>
+            
+            <button class="hint-button" onclick="showHint('ce-hint-2')">
+                Get Technical Insight <span class="hint-cost">5 points</span>
+            </button>
+            <div class="hint-content" id="ce-hint-2">
+                When evaluating AI capabilities, focus on how the technology handles edge cases and exceptions, not just typical examples.
+            </div>
+        </div>
+        
+        <div class="screen" id="concepts-explorer-3">
+            <div class="resource-bar">
+                <div class="insight-points"><span class="insight-icon"></span> <span id="ce-points-display-3">0</span> Insight Points</div>
+                <div class="mission-progress">Mission: 3/3</div>
+            </div>
+            
+            <div class="progress-bar"><div class="progress" id="ce-progress-3"></div></div>
+            <div class="timer" id="ce-timer-3">Time: 0s</div>
+            
+            <div class="mission-card">
+                <h3>Knowledge Assessment</h3>
+                <div class="character">
+                    <div class="character-icon">CTO</div>
+                    <div class="character-message">"Let's confirm your understanding of these concepts."</div>
+                </div>
+                <div id="concept-quiz">
+                    <!-- Quiz will be inserted here by JS -->
+                </div>
+                <div id="quiz-result" style="display: none;"></div>
+            </div>
+            
+            <div class="footer">
+                <button onclick="showWelcomeWithStatus()">Return to HQ</button>
+                <button onclick="shareResults()">Share Mission Report</button>
+            </div>
+        </div>
+
+        <!-- Ethics Navigator Screens -->
+        <div class="screen" id="ethics-navigator-1">
+            <div class="resource-bar">
+                <div class="insight-points"><span class="insight-icon"></span> <span id="en-points-display">0</span> Insight Points</div>
+                <div class="mission-progress">Mission: 1/3</div>
+            </div>
+            
+            <div class="progress-bar"><div class="progress" id="en-progress"></div></div>
+            <div class="timer" id="en-timer">Time: 0s</div>
+            
+            <div class="mission-card">
+                <h3>Employee Retention Predictor</h3>
+                <div class="character">
+                    <div class="character-icon">HR</div>
+                    <div class="character-message">"We've developed an AI that can predict which employees might leave in the next 6 months. How should we implement this ethically?"</div>
+                </div>
+            </div>
+            
+            <button class="choice-btn" onclick="ethicsChoice('a')">
+                Monitor all employees secretly to identify those at risk
+                <div class="choice-consequence">Maximum data collection, potential privacy issues</div>
+            </button>
+            
+            <button class="choice-btn" onclick="ethicsChoice('b')">
+                Be transparent about the system but make participation mandatory
+                <div class="choice-consequence">Balanced approach, some consent concerns</div>
+            </button>
+            
+            <button class="choice-btn" onclick="ethicsChoice('c')">
+                Make it opt-in and use it primarily for improving work conditions
+                <div class="choice-consequence">Ethical focus, potentially limited data</div>
+            </button>
+            
+            <button class="hint-button" onclick="showHint('en-hint-1')">
+                Get Ethical Insight <span class="hint-cost">5 points</span>
+            </button>
+            <div class="hint-content" id="en-hint-1">
+                Employee monitoring systems that lack transparency often create trust issues that can accelerate turnover rather than reduce it.
+            </div>
+        </div>
+        
+        <!-- Other screens similar structure -->
+        
+        <!-- QR Code and Share Screen -->
+        <div class="screen" id="share-screen">
+            <div class="resource-bar">
+                <div class="insight-points"><span class="insight-icon"></span> <span id="share-points-display">0</span> Insight Points</div>
+            </div>
+            
+            <div class="mission-card">
+                <h3>Mission Report</h3>
+                <p>Share your progress with colleagues to help them join the AI implementation journey!</p>
+            </div>
+            
+            <div class="qr-container" id="qrcode"></div>
+            
+            <div id="completion-stats"></div>
+            
+            <div class="skill-tree-container" id="share-skill-tree">
+                <!-- Will be populated by JS -->
+            </div>
+            
+            <div class="footer">
+                <button onclick="showWelcomeWithStatus()">Return to HQ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management - enhanced for gamification
+        const state = {
+            currentScreen: 'welcome-screen',
+            startTime: 0,
+            elapsedTime: 0,
+            timers: {},
+            completedPerspectives: {
+                'decision-maker': false,
+                'concepts-explorer': false,
+                'ethics-navigator': false,
+                'media-detective': false
+            },
+            currentChoices: {},
+            currentConcept: '',
+            timerInterval: null,
+            insightPoints: 0,
+            unlockedSkills: ['ai-basics'],
+            decisionPath: {
+                customerService: null,
+                marketing: null
+            }
+        };
+
+        // Skill tree definition
+        const skills = [
+            { id: 'ai-basics', name: 'AI Basics', x: 100, y: 100, dependencies: [] },
+            { id: 'gen-ai', name: 'Generative AI', x: 50, y: 40, dependencies: ['ai-basics'] },
+            { id: 'ml-tech', name: 'Machine Learning', x: 150, y: 40, dependencies: ['ai-basics'] },
+            { id: 'ethics', name: 'AI Ethics', x: 180, y: 160, dependencies: ['ai-basics'] },
+            { id: 'detection', name: 'AI Detection', x: 20, y: 160, dependencies: ['ai-basics'] },
+            { id: 'strategy', name: 'AI Strategy', x: 100, y: 20, dependencies: ['gen-ai', 'ml-tech'] }
+        ];
+
+        // Load state from localStorage
+        function loadState() {
+            const savedState = localStorage.getItem('aiLiteracyState');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                state.completedPerspectives = parsedState.completedPerspectives || state.completedPerspectives;
+                state.timers = parsedState.timers || state.timers;
+                state.insightPoints = parsedState.insightPoints || 0;
+                state.unlockedSkills = parsedState.unlockedSkills || ['ai-basics'];
+                state.decisionPath = parsedState.decisionPath || { customerService: null, marketing: null };
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('aiLiteracyState', JSON.stringify({
+                completedPerspectives: state.completedPerspectives,
+                timers: state.timers,
+                insightPoints: state.insightPoints,
+                unlockedSkills: state.unlockedSkills,
+                decisionPath: state.decisionPath
+            }));
+        }
+
+        // Add insight points with animation
+        function addPoints(amount) {
+            state.insightPoints += amount;
+            updatePointsDisplay();
+            saveState();
+            
+            // Show notification
+            const notification = document.getElementById('notification');
+            notification.textContent = `+${amount} Insight Points!`;
+            notification.classList.add('show');
+            
+            // Animate points icon
+            const icons = document.querySelectorAll('.insight-icon');
+            icons.forEach(icon => {
+                icon.classList.add('point-animation');
+                setTimeout(() => {
+                    icon.classList.remove('point-animation');
+                }, 500);
+            });
+            
+            // Hide notification
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Update points display in all resource bars
+        function updatePointsDisplay() {
+            document.querySelectorAll('[id$="points-display"]').forEach(element => {
+                element.textContent = state.insightPoints;
+            });
+        }
+
+        // Show hint if user has enough points
+        function showHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            
+            if (hintElement.style.display === 'block') {
+                hintElement.style.display = 'none';
+                return;
+            }
+            
+            if (state.insightPoints >= 5) {
+                state.insightPoints -= 5;
+                updatePointsDisplay();
+                saveState();
+                hintElement.style.display = 'block';
+            } else {
+                // Show not enough points notification
+                const notification = document.getElementById('notification');
+                notification.textContent = `Not enough Insight Points! Need 5.`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
+            }
+        }
+
+        // Unlock a new skill in the skill tree
+        function unlockSkill(skillId) {
+            if (!state.unlockedSkills.includes(skillId)) {
+                state.unlockedSkills.push(skillId);
+                saveState();
+                renderSkillTree();
+                
+                // Show notification
+                const notification = document.getElementById('notification');
+                notification.textContent = `New skill unlocked: ${skills.find(s => s.id === skillId).name}!`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
+            }
+        }
+
+        // Render the skill tree visualization
+        function renderSkillTree() {
+            const treeContainers = document.querySelectorAll('#skill-tree, #share-skill-tree');
+            
+            treeContainers.forEach(container => {
+                container.innerHTML = '';
+              // Draw connections first (so they appear behind nodes)
+                skills.forEach(skill => {
+                    skill.dependencies.forEach(depId => {
+                        const dep = skills.find(s => s.id === depId);
+                        const connection = document.createElement('div');
+                        connection.className = 'skill-connection';
+                        
+                        // Calculate connection position and rotation
+                        const x1 = dep.x;
+                        const y1 = dep.y;
+                        const x2 = skill.x;
+                        const y2 = skill.y;
+                        
+                        // Calculate length and angle
+                        const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                        const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                        
+                        // Position the connection
+                        connection.style.width = `${length}px`;
+                        connection.style.left = `${x1}px`;
+                        connection.style.top = `${y1}px`;
+                        connection.style.transform = `rotate(${angle}deg)`;
+                        
+                        // Check if connection should be unlocked
+                        if (state.unlockedSkills.includes(depId) && state.unlockedSkills.includes(skill.id)) {
+                            connection.classList.add('unlocked');
+                        }
+                        
+                        container.appendChild(connection);
+                    });
+                });
+                
+                // Now draw the nodes
+                skills.forEach(skill => {
+                    const node = document.createElement('div');
+                    node.className = 'skill-node';
+                    node.textContent = skill.name;
+                    node.style.left = `${skill.x}px`;
+                    node.style.top = `${skill.y}px`;
+                    
+                    // Check if node is unlocked
+                    if (state.unlockedSkills.includes(skill.id)) {
+                        node.classList.add('unlocked');
+                    }
+                    
+                    // Add tooltip with description
+                    node.title = getSkillDescription(skill.id);
+                    
+                    container.appendChild(node);
+                });
+            });
+        }
+
+        // Get description for skill
+        function getSkillDescription(skillId) {
+            const descriptions = {
+                'ai-basics': 'Fundamental understanding of AI concepts',
+                'gen-ai': 'Creating content with generative AI models',
+                'ml-tech': 'Pattern recognition and predictive analytics',
+                'ethics': 'Ethical considerations in AI implementation',
+                'detection': 'Identifying AI-generated content',
+                'strategy': 'Strategic implementation of AI in business'
+            };
+            
+            return descriptions[skillId] || 'Skill description';
+        }
+
+        // Screen navigation with transitions
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show the selected screen
+            document.getElementById(screenId).classList.add('active');
+            state.currentScreen = screenId;
+            
+            // If we're going to the welcome screen, stop any active timers
+            if (screenId === 'welcome-screen') {
+                clearInterval(state.timerInterval);
+            }
+            
+            // Update points display
+            updatePointsDisplay();
+        }
+
+        // Timer functions
+        function startTimer(perspectiveId) {
+            state.startTime = Date.now();
+            const timerElements = document.querySelectorAll(`[id^=${perspectiveId}-timer]`);
+            
+            clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+                timerElements.forEach(timer => {
+                    timer.textContent = `Time: ${elapsed}s`;
+                });
+                state.elapsedTime = elapsed;
+            }, 1000);
+        }
+
+        function stopTimer(perspectiveId) {
+            clearInterval(state.timerInterval);
+            state.timers[perspectiveId] = state.elapsedTime;
+            saveState();
+        }
+
+        // Start a perspective with more engaging feedback
+        function startPerspective(perspectiveId) {
+            showScreen(`${perspectiveId}-1`);
+            startTimer(perspectiveId.substring(0, 2));
+            
+            // Set progress bar to 33%
+            document.getElementById(`${perspectiveId.substring(0, 2)}-progress`).style.width = '33%';
+            
+            // Track mission start with notification
+            const notification = document.getElementById('notification');
+            notification.textContent = `Mission started: ${getPerspectiveName(perspectiveId)}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Get perspective display name
+        function getPerspectiveName(perspectiveId) {
+            const names = {
+                'decision-maker': 'Strategic Planning',
+                'concepts-explorer': 'Knowledge Acquisition',
+                'ethics-navigator': 'Ethics Investigation',
+                'media-detective': 'Content Analysis'
+            };
+            
+            return names[perspectiveId] || perspectiveId;
+        }
+
+        // Enhanced Decision Maker perspective with consequences
+        function decisionMakerChoice(choice, screen) {
+            state.currentChoices[`dm-${screen}`] = choice;
+            
+            // Award points for making a decision
+            addPoints(10);
+            
+            if (screen === 1) {
+                // Store first decision for branching paths
+                state.decisionPath.customerService = choice;
+                
+                const feedback = document.getElementById('dm-feedback');
+                if (choice === 'a') {
+                    feedback.innerHTML = `
+                        <div class="character">
+                            <div class="character-icon">VP</div>
+                            <div class="character-message">
+                                "Full automation could give us an edge on costs, but I'm concerned about customer experience. Let's monitor satisfaction closely."
+                            </div>
+                        </div>
+                    `;
+                    // Unlock ML skill for choosing automation
+                    unlockSkill('ml-tech');
+                } else if (choice === 'b') {
+                    feedback.innerHTML = `
+                        <div class="character">
+                            <div class="character-icon">VP</div>
+                            <div class="character-message">
+                                "I like this balanced approach. We can leverage AI efficiency while maintaining the human touch our customers value."
+                            </div>
+                        </div>
+                    `;
+                    // Unlock both skills for balanced approach
+                    unlockSkill('ml-tech');
+                    unlockSkill('ethics');
+                } else {
+                    feedback.innerHTML = `
+                        <div class="character">
+                            <div class="character-icon">VP</div>
+                            <div class="character-message">
+                                "Customer-first approach. Smart to use AI behind the scenes while keeping our human team as the face of customer service."
+                            </div>
+                        </div>
+                    `;
+                    // Unlock ethics skill for human-focused approach
+                    unlockSkill('ethics');
+                }
+                
+                // Update marketing question based on previous choice
+                const cmMessage = document.getElementById('cm-message');
+                if (choice === 'a') {
+                    cmMessage.textContent = '"Your automated approach to customer service was bold. Now our marketing team is interested in AI too. How aggressively should we implement it?"';
+                } else if (choice === 'b') {
+                    cmMessage.textContent = '"Your balanced approach to customer service is working well. How should we apply similar thinking to our marketing efforts?"';
+                } else {
+                    cmMessage.textContent = '"Your cautious approach to customer service has maintained quality. Should we be similarly careful with marketing AI?"';
+                }
+                
+                document.getElementById('dm-progress-2').style.width = '66%';
+                showScreen('decision-maker-2');
+            } else {
+                // Store second decision
+                state.decisionPath.marketing = choice;
+                
+                const feedback = document.getElementById('dm-feedback-2');
+                if (choice === 'a') {
+                    feedback.innerHTML = `
+                        <div class="character">
+                            <div class="character-icon">CM</div>
+                            <div class="character-message">
+                                "A bold move to replace our creative team. We'll need to invest in quality control to ensure brand consistency."
+                            </div>
+                        </div>
+                    `;
+                    // Unlock generative AI skill
+                    unlockSkill('gen-ai');
+                } else if (choice === 'b') {
+                    feedback.innerHTML = `
+                        <div class="character">
+                            <div class="character-icon">CM</div>
+                            <div class="character-message">
+                                "I like this collaborative approach. Our creatives can focus on strategy while AI handles the routine production."
+                            </div>
+                        </div>
+                    `;
+                    // Unlock generative AI and strategy for balanced approach
+                    unlockSkill('gen-ai');
+                    unlockSkill('strategy');
+                } else {
+                    feedback.innerHTML = `
+                        <div class="character">
+                            <div class="character-icon">CM</div>
+                            <div class="character-message">
+                                "Keeping humans central to creative work makes sense. We'll use AI just for market analysis."
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Create personalized outcome based on combined decisions
+                const outcomeMessage = document.getElementById('decision-outcome-message');
+                
+                if (state.decisionPath.customerService === 'a' && state.decisionPath.marketing === 'a') {
+                    // Full automation path
+                    outcomeMessage.innerHTML = "Your aggressive automation strategy across departments has significantly reduced costs. However, we're seeing a 15% drop in customer satisfaction and some brand consistency issues. The board is impressed by the cost savings but concerned about long-term impact.";
+                    document.getElementById('dm-mission-summary').textContent = "Your technology-first approach has positioned us as an AI innovator, but with some customer experience challenges to address.";
+                }
+                else if (state.decisionPath.customerService === 'b' && state.decisionPath.marketing === 'b') {
+                    // Balanced path
+                    outcomeMessage.innerHTML = "Your balanced AI implementation has been remarkably successful. We're seeing a 12% increase in efficiency while maintaining high quality. The executive team is particularly impressed by how you've augmented our human teams rather than replacing them.";
+                    document.getElementById('dm-mission-summary').textContent = "Your strategic balance of human and AI capabilities has set a new standard for our technology initiatives.";
+                    // Unlock strategy for consistent balanced approach
+                    unlockSkill('strategy');
+                }
+                else if (state.decisionPath.customerService === 'c' && state.decisionPath.marketing === 'c') {
+                    // Conservative path
+                    outcomeMessage.innerHTML = "Your cautious approach has maintained our quality standards and team morale is high. However, competitors are moving faster with AI adoption, and the board is questioning if we're innovating quickly enough.";
+                    document.getElementById('dm-mission-summary').textContent = "Your human-centered strategy has preserved our core values, but we may need to accelerate innovation in selected areas.";
+                }
+                else {
+                    // Mixed path
+                    outcomeMessage.innerHTML = "Your varied approach across departments shows nuanced thinking. Some teams are embracing AI more than others, which has created both opportunities and challenges for our overall strategy.";
+                    document.getElementById('dm-mission-summary').textContent = "Your flexible implementation strategy demonstrates adaptability to different business needs.";
+                }
+                
+                // Award bonus points for completion
+                addPoints(15);
+                
+                document.getElementById('dm-progress-3').style.width = '100%';
+                state.completedPerspectives['decision-maker'] = true;
+                stopTimer('dm');
+                saveState();
+                showScreen('decision-maker-3');
+            }
+        }
+
+        // Enhanced Concepts Explorer with skill unlocking
+        function conceptsChoice(concept) {
+            state.currentConcept = concept;
+            const contentDiv = document.getElementById('concept-content');
+            
+            // Award points for exploring a concept
+            addPoints(10);
+            
+            if (concept === 'generative') {
+                contentDiv.innerHTML = `
+                    <h3>Generative AI</h3>
+                    <p>Generative AI creates new content - text, images, audio - based on patterns learned from training data.</p>
+                    <p>Key examples include:</p>
+                    <ul>
+                        <li>Large Language Models (LLMs) for text</li>
+                        <li>Diffusion models for images</li>
+                        <li>Neural voice synthesis for audio</li>
+                    </ul>
+                    <p>Unlike earlier AI that mostly analyzed existing data, generative AI can create entirely new content.</p>
+                `;
+                // Unlock generative AI skill
+                unlockSkill('gen-ai');
+            } else if (concept === 'machine') {
+                contentDiv.innerHTML = `
+                    <h3>Machine Learning</h3>
+                    <p>Machine Learning algorithms identify patterns in data without explicit programming.</p>
+                    <p>Key approaches include:</p>
+                    <ul>
+                        <li>Supervised learning (using labeled examples)</li>
+                        <li>Unsupervised learning (finding patterns without labels)</li>
+                        <li>Reinforcement learning (learning through trial and error)</li>
+                    </ul>
+                    <p>These systems improve over time as they process more data.</p>
+                `;
+                // Unlock machine learning skill
+                unlockSkill('ml-tech');
+            } else {
+                contentDiv.innerHTML = `
+                    <h3>Natural Language Processing</h3>
+                    <p>NLP focuses on interactions between computers and human language.</p>
+                    <p>Key capabilities include:</p>
+                    <ul>
+                        <li>Understanding meaning in text (semantic analysis)</li>
+                        <li>Identifying parts of speech and grammar</li>
+                        <li>Translating between languages</li>
+                    </ul>
+                    <p>Modern NLP uses neural networks to capture nuances of human communication.</p>
+                `;
+                // Also unlocks generative AI since it's related
+                unlockSkill('gen-ai');
+            }
+            
+            document.getElementById('ce-progress-2').style.width = '66%';
+            showScreen('concepts-explorer-2');
+        }
+
+        function showConceptQuiz() {
+            const quizDiv = document.getElementById('concept-quiz');
+            
+            if (state.currentConcept === 'generative') {
+                quizDiv.innerHTML = `
+                    <p>What distinguishes generative AI from traditional AI systems?</p>
+                    <button class="choice-btn" onclick="checkConceptAnswer('gen-a', false)">It only works with text data</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('gen-b', true)">It creates new content rather than just analyzing existing data</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('gen-c', false)">It requires less computing power than traditional AI</button>
+                `;
+            } else if (state.currentConcept === 'machine') {
+                quizDiv.innerHTML = `
+                    <p>Which statement about machine learning is correct?</p>
+                    <button class="choice-btn" onclick="checkConceptAnswer('ml-a', false)">Machine learning systems cannot improve without human intervention</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('ml-b', false)">All machine learning requires labeled training data</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('ml-c', true)">Machine learning identifies patterns without explicit programming</button>
+                `;
+            } else {
+                quizDiv.innerHTML = `
+                    <p>What is a key capability of modern Natural Language Processing?</p>
+                    <button class="choice-btn" onclick="checkConceptAnswer('nlp-a', false)">Perfectly simulating human consciousness</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('nlp-b', true)">Understanding semantic meaning in text</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('nlp-c', false)">Functioning without neural networks</button>
+                `;
+            }
+            
+            document.getElementById('ce-progress-3').style.width = '100%';
+            showScreen('concepts-explorer-3');
+        }
+
+        function checkConceptAnswer(answer, isCorrect) {
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.style.display = 'block';
+            
+            if (isCorrect) {
+                resultDiv.innerHTML = `
+                    <div class="character">
+                        <div class="character-icon">CTO</div>
+                        <div class="character-message">
+                            "Excellent! You've demonstrated solid understanding of this concept. This knowledge will be valuable for our implementation strategy."
+                        </div>
+                    </div>
+                `;
+                // Award points for correct answer
+                addPoints(15);
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="character">
+                        <div class="character-icon">CTO</div>
+                        <div class="character-message">
+                            "Not quite right. Let's review the material again to strengthen your understanding."
+                        </div>
+                    </div>
+                `;
+                // Still award some points for attempting
+                addPoints(5);
+            }
+            
+            state.completedPerspectives['concepts-explorer'] = true;
+            stopTimer('ce');
+            saveState();
+        }
+
+        // Enhanced Ethics Navigator with skill unlocking
+        function ethicsChoice(choice) {
+            state.currentChoices['ethics-1'] = choice;
+            const feedback = document.getElementById('ethics-feedback');
+            
+            // Award points for making an ethics decision
+            addPoints(10);
+            
+            if (choice === 'a') {
+                feedback.innerHTML = `
+                    <div class="character">
+                        <div class="character-icon">HR</div>
+                        <div class="character-message">
+                            "Secret monitoring might give us more data, but I'm concerned about legal implications and employee trust. Let's consider the risks carefully."
+                        </div>
+                    </div>
+                `;
+            } else if (choice === 'b') {
+                feedback.innerHTML = `
+                    <div class="character">
+                        <div class="character-icon">HR</div>
+                        <div class="character-message">
+                            "Transparency is good, but mandatory participation might create resistance. We should consider opt-out options for concerned employees."
+                        </div>
+                    </div>
+                `;
+                // Unlock ethics skill
+                unlockSkill('ethics');
+            } else {
+                feedback.innerHTML = `
+                    <div class="character">
+                        <div class="character-icon">HR</div>
+                        <div class="character-message">
+                            "I like this approach. By making it opt-in and focusing on workplace improvement, we demonstrate respect for employee autonomy."
+                        </div>
+                    </div>
+                `;
+                // Unlock ethics skill and strategy for balanced employee-focused approach
+                unlockSkill('ethics');
+                unlockSkill('strategy');
+            }
+            
+            document.getElementById('en-progress-2').style.width = '66%';
+            showScreen('ethics-navigator-2');
+        }
+
+        // Show welcome screen with updated status
+        function showWelcomeWithStatus() {
+            showScreen('welcome-screen');
+            updateWelcomeScreen();
+        }
+
+        // Update welcome screen
+        function updateWelcomeScreen() {
+            renderSkillTree();
+            
+            const perspectives = ['decision-maker', 'concepts-explorer', 'ethics-navigator', 'media-detective'];
+            
+            perspectives.forEach(perspective => {
+                const card = document.querySelector(`.${perspective}`);
+                if (state.completedPerspectives[perspective]) {
+                    // Add a completion indicator
+                    if (!card.querySelector('.completed-indicator')) {
+                        const indicator = document.createElement('div');
+                        indicator.className = 'completed-indicator';
+                        indicator.style.position = 'absolute';
+                        indicator.style.top = '10px';
+                        indicator.style.right = '10px';
+                        indicator.style.backgroundColor = '#2ecc71';
+                        indicator.style.color = 'white';
+                        indicator.style.padding = '2px 6px';
+                        indicator.style.borderRadius = '10px';
+                        indicator.style.fontSize = '12px';
+                        indicator.textContent = 'Completed';
+                        
+                        card.style.position = 'relative';
+                        card.appendChild(indicator);
+                    }
+                }
+            });
+            
+            // Add completion status
+            let statusDiv = document.getElementById('completion-status');
+            if (!statusDiv) {
+                statusDiv = document.createElement('div');
+                statusDiv.id = 'completion-status';
+                statusDiv.style.marginTop = '20px';
+                statusDiv.style.textAlign = 'center';
+                document.querySelector('#welcome-screen').appendChild(statusDiv);
+            }
+            
+            const completed = getCompletedCount();
+            statusDiv.innerHTML = `
+                <div class="resource-bar" style="justify-content: center;">
+                    <div>Missions Completed: ${completed}/4</div>
+                    <div class="insight-points" style="margin-left: 20px;"><span class="insight-icon"></span> ${state.insightPoints} Points</div>
+                </div>
+            `;
+            
+            if (completed === 4) {
+                statusDiv.innerHTML += `
+                    <div style="margin-top: 15px;">
+                        <p><strong>Congratulations on completing all missions!</strong></p>
+                        <p>You've unlocked ${state.unlockedSkills.length} of ${skills.length} AI skills.</p>
+                        <button onclick="shareResults()">Share Your Achievement</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Get completed perspectives count
+        function getCompletedCount() {
+            return Object.values(state.completedPerspectives).filter(Boolean).length;
+        }
+
+        // Share results with enhanced stats
+        function shareResults() {
+            const completedCount = getCompletedCount();
+            const statsElement = document.getElementById('completion-stats');
+            
+            // Calculate skill mastery percentage
+            const skillMastery = Math.round((state.unlockedSkills.length / skills.length) * 100);
+            
+            statsElement.innerHTML = `
+                <div class="mission-card">
+                    <h3>Agent Performance Report</h3>
+                    <p>Missions Completed: ${completedCount}/4</p>
+                    <p>Insight Points Earned: ${state.insightPoints}</p>
+                    <p>Skill Mastery: ${skillMastery}%</p>
+                    <p>Best Mission Time: ${Math.min(...Object.values(state.timers).filter(t => t > 0)) || 0} seconds</p>
+                </div>
+            `;
+            
+            // Generate a dummy QR code display
+            document.getElementById('qrcode').innerHTML = `
+                <div style="width: 150px; height: 150px; margin: 0 auto; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center;">
+                    <p>QR Code<br>(placeholder)</p>
+                </div>
+                <p style="margin-top: 10px;">ailiteracy.example.com/share/${btoa(JSON.stringify({points: state.insightPoints, skills: state.unlockedSkills.length}))}</p>
+            `;
+            
+            renderSkillTree();
+            showScreen('share-screen');
+        }
+
+        // Initialize
+        window.onload = function() {
+            loadState();
+            renderSkillTree();
+            updateWelcomeScreen();
+            updatePointsDisplay();
+            
+            // Add responsive design tweaks
+            if (window.innerWidth < 500) {
+                document.querySelectorAll('.choice-btn').forEach(btn => {
+                    btn.style.padding = '10px';
+                    btn.style.fontSize = '14px';
+                });
+            }
+        };
+    </script>
+</body>
+</html>
