@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Literacy Microlearning</title>
+    <style>
+        /* Base Styles */
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --accent: #e74c3c;
+            --dark: #34495e;
+            --light: #ecf0f1;
+            --text: #2c3e50;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .choice-btn {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .perspective-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .perspective-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .timer {
+            font-size: 14px;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        /* Perspective-specific styles */
+        .decision-maker {
+            border-color: #3498db;
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .concepts-explorer {
+            border-color: #2ecc71;
+            background-color: rgba(46, 204, 113, 0.1);
+        }
+        
+        .ethics-navigator {
+            border-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .media-detective {
+            border-color: #f39c12;
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="screen active" id="welcome-screen">
+            <h1>AI Literacy Microlearning</h1>
+            <p>Choose your perspective to explore AI concepts in a way that matters to you.</p>
+            <p>Each perspective takes about 30-60 seconds to complete.</p>
+            
+            <div class="perspective-card decision-maker" onclick="startPerspective('decision-maker')">
+                <h3>AI Decision Maker</h3>
+                <p>Make strategic decisions about AI implementation in your organization.</p>
+                <small>Focus: Behavior Change | For: Management</small>
+            </div>
+            
+            <div class="perspective-card concepts-explorer" onclick="startPerspective('concepts-explorer')">
+                <h3>AI Concepts Explorer</h3>
+                <p>Discover and understand key AI concepts and their relationships.</p>
+                <small>Focus: Knowledge Transfer | For: Everyone</small>
+            </div>
+            
+            <div class="perspective-card ethics-navigator" onclick="startPerspective('ethics-navigator')">
+                <h3>AI Ethics Navigator</h3>
+                <p>Navigate the ethical dimensions of AI in business contexts.</p>
+                <small>Focus: Behavior Change | For: All levels</small>
+            </div>
+            
+            <div class="perspective-card media-detective" onclick="startPerspective('media-detective')">
+                <h3>Media Literacy Detective</h3>
+                <p>Learn to critically evaluate AI-generated content.</p>
+                <small>Focus: Knowledge Transfer | For: Everyone</small>
+            </div>
+        </div>
+        
+        <!-- Decision Maker Screens -->
+        <div class="screen" id="decision-maker-1">
+            <div class="progress-bar"><div class="progress" id="dm-progress"></div></div>
+            <div class="timer" id="dm-timer">Time: 0s</div>
+            <h2>AI Decision Maker</h2>
+            <p>Your team wants to improve customer service. Which AI solution would you recommend?</p>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('a', 1)">
+                Implement a fully automated chatbot to handle all customer inquiries
+            </button>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('b', 1)">
+                Deploy an AI assistant to help human agents handle routine queries
+            </button>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('c', 1)">
+                Use AI analytics to identify common issues, but keep human-only support
+            </button>
+        </div>
+        
+        <div class="screen" id="decision-maker-2">
+            <div class="progress-bar"><div class="progress" id="dm-progress-2"></div></div>
+            <div class="timer" id="dm-timer-2">Time: 0s</div>
+            <h2>AI Decision Maker</h2>
+            <div id="dm-feedback"></div>
+            
+            <p>Now, your marketing team wants to use generative AI. What's your approach?</p>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('a', 2)">
+                Replace creative team with AI-generated content to reduce costs
+            </button>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('b', 2)">
+                Use AI to generate ideas, but have humans refine and approve
+            </button>
+            
+            <button class="choice-btn" onclick="decisionMakerChoice('c', 2)">
+                Reject AI for creative work, only use for data analysis
+            </button>
+        </div>
+        
+        <div class="screen" id="decision-maker-3">
+            <div class="progress-bar"><div class="progress" id="dm-progress-3"></div></div>
+            <div class="timer" id="dm-timer-3">Time: 0s</div>
+            <h2>AI Decision Maker</h2>
+            <div id="dm-feedback-2"></div>
+            
+            <h3>Perspective Complete!</h3>
+            <p>You've completed the AI Decision Maker perspective.</p>
+            <p>Key takeaway: Effective AI implementation balances automation with human expertise.</p>
+            
+            <div class="footer">
+                <button onclick="showScreen('welcome-screen')">Choose Another Perspective</button>
+                <button onclick="shareResults()">Share Your Results</button>
+            </div>
+        </div>
+        
+        <!-- Concepts Explorer Screens -->
+        <div class="screen" id="concepts-explorer-1">
+            <div class="progress-bar"><div class="progress" id="ce-progress"></div></div>
+            <div class="timer" id="ce-timer">Time: 0s</div>
+            <h2>AI Concepts Explorer</h2>
+            <p>Select a concept area to explore:</p>
+            
+            <button class="choice-btn" onclick="conceptsChoice('generative')">
+                Generative AI (Creating new content)
+            </button>
+            
+            <button class="choice-btn" onclick="conceptsChoice('machine')">
+                Machine Learning (Pattern recognition)
+            </button>
+            
+            <button class="choice-btn" onclick="conceptsChoice('nlp')">
+                Natural Language Processing (Understanding text)
+            </button>
+        </div>
+        
+        <div class="screen" id="concepts-explorer-2">
+            <div class="progress-bar"><div class="progress" id="ce-progress-2"></div></div>
+            <div class="timer" id="ce-timer-2">Time: 0s</div>
+            <h2>AI Concepts Explorer</h2>
+            <div id="concept-content">
+                <!-- Content will be inserted here by JS -->
+            </div>
+            
+            <button onclick="showConceptQuiz()">Test Your Knowledge</button>
+        </div>
+        
+        <div class="screen" id="concepts-explorer-3">
+            <div class="progress-bar"><div class="progress" id="ce-progress-3"></div></div>
+            <div class="timer" id="ce-timer-3">Time: 0s</div>
+            <h2>AI Concepts Explorer</h2>
+            <div id="concept-quiz">
+                <!-- Quiz will be inserted here by JS -->
+            </div>
+            
+            <div id="quiz-result" style="display: none;"></div>
+            
+            <div class="footer">
+                <button onclick="showScreen('welcome-screen')">Choose Another Perspective</button>
+                <button onclick="shareResults()">Share Your Results</button>
+            </div>
+        </div>
+
+        <!-- Ethics Navigator Screens -->
+        <div class="screen" id="ethics-navigator-1">
+            <div class="progress-bar"><div class="progress" id="en-progress"></div></div>
+            <div class="timer" id="en-timer">Time: 0s</div>
+            <h2>AI Ethics Navigator</h2>
+            <p>Your company has developed an AI that can predict which employees might quit in the next 6 months.</p>
+            <p>How would you implement this technology?</p>
+            
+            <button class="choice-btn" onclick="ethicsChoice('a')">
+                Monitor all employees secretly to identify those at risk
+            </button>
+            
+            <button class="choice-btn" onclick="ethicsChoice('b')">
+                Be transparent about the system but make participation mandatory
+            </button>
+            
+            <button class="choice-btn" onclick="ethicsChoice('c')">
+                Make it opt-in and use it primarily for improving work conditions
+            </button>
+        </div>
+        
+        <div class="screen" id="ethics-navigator-2">
+            <div class="progress-bar"><div class="progress" id="en-progress-2"></div></div>
+            <div class="timer" id="en-timer-2">Time: 0s</div>
+            <h2>AI Ethics Navigator</h2>
+            <div id="ethics-feedback"></div>
+            
+            <h3>Consider the Implications</h3>
+            <p>Which ethical principle is MOST important in this scenario?</p>
+            
+            <button class="choice-btn" onclick="ethicsChoice2('privacy')">Privacy and consent</button>
+            <button class="choice-btn" onclick="ethicsChoice2('fairness')">Fairness and equity</button>
+            <button class="choice-btn" onclick="ethicsChoice2('transparency')">Transparency and explainability</button>
+        </div>
+        
+        <div class="screen" id="ethics-navigator-3">
+            <div class="progress-bar"><div class="progress" id="en-progress-3"></div></div>
+            <div class="timer" id="en-timer-3">Time: 0s</div>
+            <h2>AI Ethics Navigator</h2>
+            <div id="ethics-feedback-2"></div>
+            
+            <h3>Perspective Complete!</h3>
+            <p>You've completed the AI Ethics Navigator perspective.</p>
+            <p>Key takeaway: Ethical AI implementation requires balancing multiple principles and stakeholder interests.</p>
+            
+            <div class="footer">
+                <button onclick="showScreen('welcome-screen')">Choose Another Perspective</button>
+                <button onclick="shareResults()">Share Your Results</button>
+            </div>
+        </div>
+        
+        <!-- Media Detective Screens -->
+        <div class="screen" id="media-detective-1">
+            <div class="progress-bar"><div class="progress" id="md-progress"></div></div>
+            <div class="timer" id="md-timer">Time: 0s</div>
+            <h2>Media Literacy Detective</h2>
+            <p>Examine this text. Do you think it was written by AI or a human?</p>
+            
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                "The quarterly financial report shows promising growth in our core markets, with revenue increases of 12% year-over-year. However, challenges in the Asian market continue to affect our global expansion strategy."
+            </div>
+            
+            <button class="choice-btn" onclick="mediaChoice('ai')">Written by AI</button>
+            <button class="choice-btn" onclick="mediaChoice('human')">Written by Human</button>
+        </div>
+        
+        <div class="screen" id="media-detective-2">
+            <div class="progress-bar"><div class="progress" id="md-progress-2"></div></div>
+            <div class="timer" id="md-timer-2">Time: 0s</div>
+            <h2>Media Literacy Detective</h2>
+            <div id="media-feedback"></div>
+            
+            <p>What are the key indicators you should look for when evaluating if content is AI-generated?</p>
+            
+            <button class="choice-btn" onclick="mediaChoice2('a')">
+                Perfect grammar and flawless spelling
+            </button>
+            
+            <button class="choice-btn" onclick="mediaChoice2('b')">
+                Generic phrasing and lack of specific details
+            </button>
+            
+            <button class="choice-btn" onclick="mediaChoice2('c')">
+                Long sentences with complex vocabulary
+            </button>
+        </div>
+        
+        <div class="screen" id="media-detective-3">
+            <div class="progress-bar"><div class="progress" id="md-progress-3"></div></div>
+            <div class="timer" id="md-timer-3">Time: 0s</div>
+            <h2>Media Literacy Detective</h2>
+            <div id="media-feedback-2"></div>
+            
+            <h3>Perspective Complete!</h3>
+            <p>You've completed the Media Literacy Detective perspective.</p>
+            <p>Key takeaway: Critical evaluation of content is increasingly important in the age of AI-generated media.</p>
+            
+            <div class="footer">
+                <button onclick="showScreen('welcome-screen')">Choose Another Perspective</button>
+                <button onclick="shareResults()">Share Your Results</button>
+            </div>
+        </div>
+        
+        <!-- QR Code and Share Screen -->
+        <div class="screen" id="share-screen">
+            <h2>Share Your Journey</h2>
+            <p>Scan this QR code or send the link to invite others to try this AI literacy experience!</p>
+            
+            <div class="qr-container" id="qrcode"></div>
+            
+            <p id="completion-stats"></p>
+            
+            <div class="footer">
+                <button onclick="showScreen('welcome-screen')">Return to Perspectives</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        const state = {
+            currentScreen: 'welcome-screen',
+            startTime: 0,
+            elapsedTime: 0,
+            timers: {},
+            completedPerspectives: {
+                'decision-maker': false,
+                'concepts-explorer': false,
+                'ethics-navigator': false,
+                'media-detective': false
+            },
+            currentChoices: {},
+            currentConcept: '',
+            timerInterval: null
+        };
+
+        // Load state from localStorage if available
+        function loadState() {
+            const savedState = localStorage.getItem('aiLiteracyState');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                state.completedPerspectives = parsedState.completedPerspectives || state.completedPerspectives;
+                state.timers = parsedState.timers || state.timers;
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('aiLiteracyState', JSON.stringify({
+                completedPerspectives: state.completedPerspectives,
+                timers: state.timers
+            }));
+        }
+
+        // Screen navigation
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show the selected screen
+            document.getElementById(screenId).classList.add('active');
+            state.currentScreen = screenId;
+            
+            // If we're going to the welcome screen, stop any active timers
+            if (screenId === 'welcome-screen') {
+                clearInterval(state.timerInterval);
+            }
+        }
+
+        // Timer functions
+        function startTimer(perspectiveId) {
+            state.startTime = Date.now();
+            const timerElements = document.querySelectorAll(`[id^=${perspectiveId}-timer]`);
+            
+            clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+                timerElements.forEach(timer => {
+                    timer.textContent = `Time: ${elapsed}s`;
+                });
+                state.elapsedTime = elapsed;
+            }, 1000);
+        }
+
+        function stopTimer(perspectiveId) {
+            clearInterval(state.timerInterval);
+            state.timers[perspectiveId] = state.elapsedTime;
+            saveState();
+        }
+
+        // Start a perspective
+        function startPerspective(perspectiveId) {
+            showScreen(`${perspectiveId}-1`);
+            startTimer(perspectiveId.substring(0, 2)); // Use first 2 chars as timer ID
+            
+            // Set progress bar to 33%
+            document.getElementById(`${perspectiveId.substring(0, 2)}-progress`).style.width = '33%';
+        }
+
+        // Decision Maker perspective functions
+        function decisionMakerChoice(choice, screen) {
+            state.currentChoices[`dm-${screen}`] = choice;
+            
+            if (screen === 1) {
+                const feedback = document.getElementById('dm-feedback');
+                if (choice === 'a') {
+                    feedback.innerHTML = '<p><strong>Fully automated solution:</strong> This might reduce costs but could frustrate customers with complex issues. Consider balance.</p>';
+                } else if (choice === 'b') {
+                    feedback.innerHTML = '<p><strong>Hybrid approach:</strong> Good balance of efficiency and personal touch. AI augments human capabilities.</p>';
+                } else {
+                    feedback.innerHTML = '<p><strong>Analytics focus:</strong> Data-driven but cautious approach. Helps identify trends while maintaining human connection.</p>';
+                }
+                
+                document.getElementById('dm-progress-2').style.width = '66%';
+                showScreen('decision-maker-2');
+            } else {
+                const feedback = document.getElementById('dm-feedback-2');
+                if (choice === 'a') {
+                    feedback.innerHTML = '<p><strong>Full replacement:</strong> Creative work requires human judgment and emotional intelligence. AI alone may produce generic content.</p>';
+                } else if (choice === 'b') {
+                    feedback.innerHTML = '<p><strong>Collaborative approach:</strong> Leverages AI efficiency while maintaining human creativity and oversight. Best of both worlds.</p>';
+                } else {
+                    feedback.innerHTML = '<p><strong>Limited use:</strong> Missing opportunities for AI to enhance creative process, though data analysis is valuable.</p>';
+                }
+                
+                document.getElementById('dm-progress-3').style.width = '100%';
+                state.completedPerspectives['decision-maker'] = true;
+                stopTimer('dm');
+                saveState();
+                showScreen('decision-maker-3');
+            }
+        }
+
+        // Concepts Explorer perspective functions
+        function conceptsChoice(concept) {
+            state.currentConcept = concept;
+            const contentDiv = document.getElementById('concept-content');
+            
+            if (concept === 'generative') {
+                contentDiv.innerHTML = `
+                    <h3>Generative AI</h3>
+                    <p>Generative AI creates new content - text, images, audio - based on patterns learned from training data.</p>
+                    <p>Key examples include:</p>
+                    <ul>
+                        <li>Large Language Models (LLMs) for text</li>
+                        <li>Diffusion models for images</li>
+                        <li>Neural voice synthesis for audio</li>
+                    </ul>
+                    <p>Unlike earlier AI that mostly analyzed existing data, generative AI can create entirely new content.</p>
+                `;
+            } else if (concept === 'machine') {
+                contentDiv.innerHTML = `
+                    <h3>Machine Learning</h3>
+                    <p>Machine Learning algorithms identify patterns in data without explicit programming.</p>
+                    <p>Key approaches include:</p>
+                    <ul>
+                        <li>Supervised learning (using labeled examples)</li>
+                        <li>Unsupervised learning (finding patterns without labels)</li>
+                        <li>Reinforcement learning (learning through trial and error)</li>
+                    </ul>
+                    <p>These systems improve over time as they process more data.</p>
+                `;
+            } else {
+                contentDiv.innerHTML = `
+                    <h3>Natural Language Processing</h3>
+                    <p>NLP focuses on interactions between computers and human language.</p>
+                    <p>Key capabilities include:</p>
+                    <ul>
+                        <li>Understanding meaning in text (semantic analysis)</li>
+                        <li>Identifying parts of speech and grammar</li>
+                        <li>Translating between languages</li>
+                    </ul>
+                    <p>Modern NLP uses neural networks to capture nuances of human communication.</p>
+                `;
+            }
+            
+            document.getElementById('ce-progress-2').style.width = '66%';
+            showScreen('concepts-explorer-2');
+        }
+
+        function showConceptQuiz() {
+            const quizDiv = document.getElementById('concept-quiz');
+            
+            if (state.currentConcept === 'generative') {
+                quizDiv.innerHTML = `
+                    <p>What distinguishes generative AI from traditional AI systems?</p>
+                    <button class="choice-btn" onclick="checkConceptAnswer('gen-a', false)">It only works with text data</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('gen-b', true)">It creates new content rather than just analyzing existing data</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('gen-c', false)">It requires less computing power than traditional AI</button>
+                `;
+            } else if (state.currentConcept === 'machine') {
+                quizDiv.innerHTML = `
+                    <p>Which statement about machine learning is correct?</p>
+                    <button class="choice-btn" onclick="checkConceptAnswer('ml-a', false)">Machine learning systems cannot improve without human intervention</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('ml-b', false)">All machine learning requires labeled training data</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('ml-c', true)">Machine learning identifies patterns without explicit programming</button>
+                `;
+            } else {
+                quizDiv.innerHTML = `
+                    <p>What is a key capability of modern Natural Language Processing?</p>
+                    <button class="choice-btn" onclick="checkConceptAnswer('nlp-a', false)">Perfectly simulating human consciousness</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('nlp-b', true)">Understanding semantic meaning in text</button>
+                    <button class="choice-btn" onclick="checkConceptAnswer('nlp-c', false)">Functioning without neural networks</button>
+                `;
+            }
+            
+            document.getElementById('ce-progress-3').style.width = '100%';
+            showScreen('concepts-explorer-3');
+        }
+
+        function checkConceptAnswer(answer, isCorrect) {
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.style.display = 'block';
+            
+            if (isCorrect) {
+                resultDiv.innerHTML = `<p style="color: green;">Correct! You've demonstrated understanding of this concept.</p>`;
+            } else {
+                resultDiv.innerHTML = `<p style="color: red;">Not quite. Review the concept and try again.</p>`;
+            }
+            
+            state.completedPerspectives['concepts-explorer'] = true;
+            stopTimer('ce');
+            saveState();
+        }
+
+        // Ethics Navigator perspective functions
+        function ethicsChoice(choice) {
+            state.currentChoices['ethics-1'] = choice;
+            const feedback = document.getElementById('ethics-feedback');
+            
+            if (choice === 'a') {
+                feedback.innerHTML = `
+                    <p><strong>Secret monitoring:</strong> This raises serious privacy concerns and could damage trust. 
+                    While it might provide data, the ethical costs are significant.</p>
+                `;
+            } else if (choice === 'b') {
+                feedback.innerHTML = `
+                    <p><strong>Transparent but mandatory:</strong> Better than secret monitoring, but still raises concerns 
+                    about employee autonomy and potential discriminatory impacts.</p>
+                `;
+            } else {
+                feedback.innerHTML = `
+                    <p><strong>Opt-in approach:</strong> Most respectful of employee privacy and autonomy. 
+                    May reduce data coverage but builds trust and demonstrates ethical commitment.</p>
+                `;
+            }
+            
+            document.getElementById('en-progress-2').style.width = '66%';
+            showScreen('ethics-navigator-2');
+        }
+
+        function ethicsChoice2(principle) {
+            state.currentChoices['ethics-2'] = principle;
+            const feedback = document.getElementById('ethics-feedback-2');
+            
+            if (principle === 'privacy') {
+                feedback.innerHTML = `
+                    <p><strong>Privacy and consent</strong> are foundational to ethical AI use. Without proper privacy protections, 
+                    AI systems can become invasive and erode trust. Good choice!</p>
+                `;
+            } else if (principle === 'fairness') {
+                feedback.innerHTML = `
+                    <p><strong>Fairness and equity</strong> help ensure AI systems don't perpetuate biases or discrimination. 
+                    Important to consider how predictions might affect different employee groups differently.</p>
+                `;
+            } else {
+                feedback.innerHTML = `
+                    <p><strong>Transparency and explainability</strong> allow stakeholders to understand how AI decisions are made. 
+                    Critical for accountability and building trust in the system.</p>
+                `;
+            }
+            
+            document.getElementById('en-progress-3').style.width = '100%';
+            state.completedPerspectives['ethics-navigator'] = true;
+            stopTimer('en');
+            saveState();
+            showScreen('ethics-navigator-3');
+        }
+
+        // Media Detective perspective functions
+        function mediaChoice(choice) {
+            state.currentChoices['media-1'] = choice;
+            const feedback = document.getElementById('media-feedback');
+            
+            feedback.innerHTML = `
+                <p>This was actually <strong>written by AI</strong>.</p>
+                <p>Notice the generic phrasing ("promising growth," "core markets") and lack of specific numbers 
+                beyond the basic percentage. AI often produces competent but somewhat generic business language.</p>
+            `;
+            
+            document.getElementById('md-progress-2').style.width = '66%';
+            showScreen('media-detective-2');
+        }
+
+        function mediaChoice2(choice) {
+            state.currentChoices['media-2'] = choice;
+            const feedback = document.getElementById('media-feedback-2');
+            
+            if (choice === 'a') {
+                feedback.innerHTML = `
+                    <p>While AI content often has good grammar, perfect grammar alone isn't a reliable indicator. 
+                    Many humans write with excellent grammar too.</p>
+                `;
+            } else if (choice === 'b') {
+                feedback.innerHTML = `
+                    <p>Correct! AI-generated content often lacks specific details and uses generic phrasing. 
+                    Look for vague statements that sound plausible but lack precise information.</p>
+                `;
+            } else {
+                feedback.innerHTML = `
+                    <p>Complex vocabulary can appear in both human and AI writing. Some AI models actually use 
+                    simpler sentences to avoid mistakes in longer constructions.</p>
+                `;
+            }
+            
+            document.getElementById('md-progress-3').style.width = '100%';
+            state.completedPerspectives['media-detective'] = true;
+            stopTimer('md');
+            saveState();
+            showScreen('media-detective-3');
+        }
+
+        // Share results function
+        function shareResults() {
+            const completedCount = Object.values(state.completedPerspectives).filter(v => v).length;
+            const statsElement = document.getElementById('completion-stats');
+            
+            statsElement.innerHTML = `
+                <p>You've completed ${completedCount} out of 4 perspectives.</p>
+                <p>Best completion time: ${Math.min(...Object.values(state.timers).filter(t => t > 0)) || 0} seconds</p>
+            `;
+            
+            // Generate a dummy QR code display since we can't actually generate one in this demo
+            document.getElementById('qrcode').innerHTML = `
+                <div style="width: 150px; height: 150px; margin: 0 auto; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center;">
+                    <p>QR Code<br>(placeholder)</p>
+                </div>
+                <p style="margin-top: 10px;">ailearning.example.com/share</p>
+            `;
+            
+            showScreen('share-screen');
+        }
+
+        // Initialize
+        window.onload = function() {
+            loadState();
+        };
+// Initialize QR code library placeholder
+        // In a real implementation, we would use a library like qrcode.js
+        function generateQRCode(url) {
+            // This is a placeholder - in real implementation would generate actual QR code
+            console.log("Generated QR code for:", url);
+        }
+        
+        // Reset state for a specific perspective
+        function resetPerspective(perspectiveId) {
+            // Reset current choices
+            Object.keys(state.currentChoices).forEach(key => {
+                if (key.startsWith(perspectiveId)) {
+                    delete state.currentChoices[key];
+                }
+            });
+            
+            // Reset progress bars
+            document.querySelectorAll(`[id^=${perspectiveId}-progress]`).forEach(bar => {
+                bar.style.width = '0%';
+            });
+            
+            // Start from first screen
+            showScreen(`${perspectiveId}-1`);
+            startTimer(perspectiveId.substring(0, 2));
+        }
+        
+        // Get number of completed perspectives
+        function getCompletedCount() {
+            return Object.values(state.completedPerspectives).filter(Boolean).length;
+        }
+        
+        // Update welcome screen to show completion status
+        function updateWelcomeScreen() {
+            const perspectives = ['decision-maker', 'concepts-explorer', 'ethics-navigator', 'media-detective'];
+            
+            perspectives.forEach(perspective => {
+                const card = document.querySelector(`.${perspective}`);
+                if (state.completedPerspectives[perspective]) {
+                    // Add a completion indicator
+                    if (!card.querySelector('.completed-indicator')) {
+                        const indicator = document.createElement('div');
+                        indicator.className = 'completed-indicator';
+                        indicator.style.position = 'absolute';
+                        indicator.style.top = '10px';
+                        indicator.style.right = '10px';
+                        indicator.style.backgroundColor = '#2ecc71';
+                        indicator.style.color = 'white';
+                        indicator.style.padding = '2px 8px';
+                        indicator.style.borderRadius = '10px';
+                        indicator.style.fontSize = '12px';
+                        indicator.textContent = 'Completed';
+                        
+                        card.style.position = 'relative';
+                        card.appendChild(indicator);
+                    }
+                }
+            });
+            
+            // Add completion status
+            let statusDiv = document.getElementById('completion-status');
+            if (!statusDiv) {
+                statusDiv = document.createElement('div');
+                statusDiv.id = 'completion-status';
+                statusDiv.style.marginTop = '20px';
+                statusDiv.style.textAlign = 'center';
+                document.querySelector('#welcome-screen').appendChild(statusDiv);
+            }
+            
+            const completed = getCompletedCount();
+            statusDiv.innerHTML = `<p>You've completed ${completed} of 4 perspectives</p>`;
+            
+            if (completed === 4) {
+                statusDiv.innerHTML += `
+                    <div style="margin-top: 15px;">
+                        <p><strong>Congratulations on completing all perspectives!</strong></p>
+                        <button onclick="shareResults()">Share Your Achievement</button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Show welcome screen with updated completion status
+        function showWelcomeWithStatus() {
+            showScreen('welcome-screen');
+            updateWelcomeScreen();
+        }
+        
+        // Add styling for perspective cards on load
+        function styleCards() {
+            const cards = document.querySelectorAll('.perspective-card');
+            cards.forEach(card => {
+                // Add minimal hover effect
+                card.style.transition = 'transform 0.3s, box-shadow 0.3s';
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.boxShadow = 'none';
+                });
+            });
+        }
+        
+        // Function to animate progress bars
+        function animateProgressBar(elementId, targetPercentage) {
+            const bar = document.getElementById(elementId);
+            let current = parseInt(bar.style.width) || 0;
+            const target = targetPercentage;
+            
+            if (current < target) {
+                const interval = setInterval(() => {
+                    current += 1;
+                    bar.style.width = `${current}%`;
+                    if (current >= target) {
+                        clearInterval(interval);
+                    }
+                }, 10);
+            }
+        }
+        
+        // When returning to welcome screen, update perspective completion status
+        document.querySelectorAll('button').forEach(button => {
+            if (button.onclick && button.onclick.toString().includes('welcome-screen')) {
+                const originalOnClick = button.onclick;
+                button.onclick = function() {
+                    originalOnClick.call(this);
+                    updateWelcomeScreen();
+                };
+            }
+        });
+        
+        // Initialize application
+        window.onload = function() {
+            loadState();
+            styleCards();
+            updateWelcomeScreen();
+            
+            // Add responsive design tweaks
+            if (window.innerWidth < 500) {
+                document.querySelectorAll('.choice-btn').forEach(btn => {
+                    btn.style.padding = '10px';
+                    btn.style.fontSize = '14px';
+                });
+            }
+            
+            // Add event listeners for progress bar animations
+            const progressBars = [
+                { screen: 'decision-maker-1', id: 'dm-progress', value: 33 },
+                { screen: 'decision-maker-2', id: 'dm-progress-2', value: 66 },
+                { screen: 'decision-maker-3', id: 'dm-progress-3', value: 100 },
+                { screen: 'concepts-explorer-1', id: 'ce-progress', value: 33 },
+                { screen: 'concepts-explorer-2', id: 'ce-progress-2', value: 66 },
+                { screen: 'concepts-explorer-3', id: 'ce-progress-3', value: 100 },
+                { screen: 'ethics-navigator-1', id: 'en-progress', value: 33 },
+                { screen: 'ethics-navigator-2', id: 'en-progress-2', value: 66 },
+                { screen: 'ethics-navigator-3', id: 'en-progress-3', value: 100 },
+                { screen: 'media-detective-1', id: 'md-progress', value: 33 },
+                { screen: 'media-detective-2', id: 'md-progress-2', value: 66 },
+                { screen: 'media-detective-3', id: 'md-progress-3', value: 100 }
+            ];
+            
+            progressBars.forEach(bar => {
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.target.classList.contains('active')) {
+                            animateProgressBar(bar.id, bar.value);
+                        }
+                    });
+                });
+                
+                const screen = document.getElementById(bar.screen);
+                observer.observe(screen, { attributes: true });
+            });
+        };
+        
+        // Add mobile-specific touch handling
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detect if device is mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Adjust padding and margins for mobile
+                document.querySelectorAll('.choice-btn').forEach(btn => {
+                    btn.style.padding = '12px';
+                    btn.style.marginBottom = '8px';
+                });
+                
+                // Increase font size for readability
+                document.querySelector('body').style.fontSize = '18px';
+                
+                // Make sure the container takes full height
+                document.querySelector('.container').style.minHeight = '100vh';
+            }
+        });
+        
+        // Functions to handle back navigation
+        function goBack(currentScreen) {
+            // Simple mapping of screens to their previous screens
+            const backMapping = {
+                'decision-maker-2': 'decision-maker-1',
+                'decision-maker-3': 'decision-maker-2',
+                'concepts-explorer-2': 'concepts-explorer-1',
+                'concepts-explorer-3': 'concepts-explorer-2',
+                'ethics-navigator-2': 'ethics-navigator-1',
+                'ethics-navigator-3': 'ethics-navigator-2',
+                'media-detective-2': 'media-detective-1',
+                'media-detective-3': 'media-detective-2',
+                'share-screen': 'welcome-screen'
+            };
+
+            const previousScreen = backMapping[currentScreen];
+            if (previousScreen) {
+                showScreen(previousScreen);
+                
+                // Update progress bars accordingly
+                if (previousScreen.endsWith('-1')) {
+                    document.getElementById(previousScreen.split('-')[0].substring(0, 2) + '-progress').style.width = '33%';
+                } else if (previousScreen.endsWith('-2')) {
+                    document.getElementById(previousScreen.split('-')[0].substring(0, 2) + '-progress-2').style.width = '66%';
+                }
+            } else {
+                showScreen('welcome-screen');
+            }
+        }
+        
+        // Function to allow restarting a completed perspective
+        function restartPerspective(perspectiveId) {
+            // Reset state for this perspective
+            state.completedPerspectives[perspectiveId] = false;
+            delete state.timers[perspectiveId.substring(0, 2)];
+            
+            // Reset any saved choices
+            Object.keys(state.currentChoices).forEach(key => {
+                if (key.startsWith(perspectiveId.substring(0, 2))) {
+                    delete state.currentChoices[key];
+                }
+            });
+            
+            // Save the updated state
+            saveState();
+            
+            // Start the perspective fresh
+            startPerspective(perspectiveId);
+        }
+        
+        // Add restart buttons to completion screens
+        document.addEventListener('DOMContentLoaded', function() {
+            const completionScreens = [
+                { id: 'decision-maker-3', perspective: 'decision-maker' },
+                { id: 'concepts-explorer-3', perspective: 'concepts-explorer' },
+                { id: 'ethics-navigator-3', perspective: 'ethics-navigator' },
+                { id: 'media-detective-3', perspective: 'media-detective' }
+            ];
+            
+            completionScreens.forEach(screen => {
+                const footerDiv = document.querySelector(`#${screen.id} .footer`);
+                
+                // Add restart button
+                const restartButton = document.createElement('button');
+                restartButton.textContent = 'Restart This Perspective';
+                restartButton.style.backgroundColor = '#e74c3c';
+                restartButton.onclick = function() {
+                    restartPerspective(screen.perspective);
+                };
+                
+                footerDiv.appendChild(restartButton);
+            });
+        });
+    </script>
+</body>
+</html>
