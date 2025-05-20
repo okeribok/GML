@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Call Center AI Game</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            touch-action: manipulation;
+            background-color: #f5f5f5;
+        }
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+            background-color: #f0f0f0;
+        }
+        #paddle {
+            position: absolute;
+            bottom: 10%;
+            left: 0;
+            font-size: 1.8rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            touch-action: none;
+            cursor: grab;
+            border-top: 2px solid #000;
+            padding-top: 5px;
+            z-index: 100;
+        }
+        .phone {
+            position: absolute;
+            font-size: 2rem;
+            user-select: none;
+        }
+        #score-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        #time-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        #satisfaction-meter {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 20px;
+            background-color: #eee;
+            border: 1px solid #555;
+            border-radius: 10px;
+            display: none;
+        }
+        #satisfaction-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            transition: width 0.1s linear;
+        }
+        #stars-display {
+            position: absolute;
+            bottom: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            display: none;
+        }
+        #level-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 200;
+            display: none;
+        }
+        #histogram-container {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            display: none;
+        }
+        .histogram-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        .histogram-label {
+            width: 20px;
+            text-align: right;
+            margin-right: 5px;
+        }
+        .histogram-value {
+            height: 10px;
+            background-color: #ffb700;
+            min-width: 1px;
+        }
+        .histogram-count {
+            margin-left: 5px;
+            width: 20px;
+        }
+        #chatbot-layer {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-color: rgba(100, 149, 237, 0.3);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        #chatbot-icon {
+            font-size: 1.5rem;
+            margin-right: 5px;
+        }
+        #future-ideas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+            display: none;
+            z-index: 200;
+        }
+        #future-ideas h2 {
+            margin-top: 0;
+        }
+        #future-ideas ul {
+            padding-left: 20px;
+            text-align: left;
+        }
+        .floating-star {
+            position: absolute;
+            font-size: 1.5rem;
+            pointer-events: none;
+            opacity: 1;
+            transition: all 1s ease-out;
+        }
+        #start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 150;
+        }
+        .restart-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="score-container">Score: <span id="score">0</span></div>
+        <div id="time-container">Time: <span id="time">08:00</span></div>
+        <div id="histogram-container">
+            <div class="histogram-bar">
+                <div class="histogram-label">⭐⭐⭐⭐⭐</div>
+                <div class="histogram-value" id="histogram-5"></div>
+                <div class="histogram-count" id="count-5">0</div>
+            </div>
+            <div class="histogram-bar">
+                <div class="histogram-label">⭐⭐⭐⭐</div>
+                <div class="histogram-value" id="histogram-4"></div>
+                <div class="histogram-count" id="count-4">0</div>
+            </div>
+            <div class="histogram-bar">
+                <div class="histogram-label">⭐⭐⭐</div>
+                <div class="histogram-value" id="histogram-3"></div>
+                <div class="histogram-count" id="count-3">0</div>
+            </div>
+            <div class="histogram-bar">
+                <div class="histogram-label">⭐⭐</div>
+                <div class="histogram-value" id="histogram-2"></div>
+                <div class="histogram-count" id="count-2">0</div>
+            </div>
+            <div class="histogram-bar">
+                <div class="histogram-label">⭐</div>
+                <div class="histogram-value" id="histogram-1"></div>
+                <div class="histogram-count" id="count-1">0</div>
+            </div>
+        </div>
+        <div id="satisfaction-meter">
+            <div id="satisfaction-fill"></div>
+        </div>
+        <div id="stars-display"></div>
+        <div id="chatbot-layer">
+            <span id="chatbot-icon">🤖</span>
+            <span>AI Chatbot Layer</span>
+        </div>
+        <div id="level-message"></div>
+        <div id="paddle">👩🏽‍💼👨🏻‍💼👩🏿‍💻👨🏼‍💻👩🏻‍💼</div>
+        <div id="future-ideas">
+            <h2>Future Development Ideas</h2>
+            <ul>
+                <li><strong>Staff Management</strong>: Reduce call center staff (smaller paddle) to cut costs but handle fewer calls</li>
+                <li><strong>AI Investment Options</strong>:
+                    <ul>
+                        <li>Upgrade chatbot capabilities (higher satisfaction but more expensive)</li>
+                        <li>Deploy on-premise vs. cloud (cost vs. reliability tradeoffs)</li>
+                        <li>Train on company data (better performance but privacy risks)</li>
+                    </ul>
+                </li>
+                <li><strong>Risk Events</strong>:
+                    <ul>
+                        <li>AI provider price doubles overnight</li>
+                        <li>Data leak exposing customer conversations</li>
+                        <li>Regulatory changes requiring human oversight</li>
+                        <li>Model degradation requiring retraining</li>
+                    </ul>
+                </li>
+                <li><strong>Customer Segmentation</strong>:
+                    <ul>
+                        <li>Different types of calls (complex vs. simple) requiring different handling</li>
+                        <li>VIP customers requiring priority service</li>
+                    </ul>
+                </li>
+                <li><strong>Performance Metrics</strong>:
+                    <ul>
+                        <li>Cost per resolution</li>
+                        <li>Average handling time</li>
+                        <li>Customer retention impact</li>
+                    </ul>
+                </li>
+                <li><strong>Team Skills Development</strong>:
+                    <ul>
+                        <li>Train staff to handle AI-assisted calls</li>
+                        <li>Specialize in complex issues AI can't handle</li>
+                        <li>Prompt engineering skills</li>
+                    </ul>
+                </li>
+            </ul>
+            <button class="restart-button" id="restart-button">Restart Game</button>
+        </div>
+        <button id="start-button">Start Game</button>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            score: 0,
+            timeMinutes: 0,
+            timeHours: 8,
+            level: 0,
+            phones: [],
+            paddleX: 0,
+            paddleWidth: 0,
+            gameWidth: 0,
+            gameHeight: 0,
+            phoneDropInterval: null,
+            clockInterval: null,
+            gameActive: false,
+            satisfaction: 0,
+            satisfactionMax: 100,
+            holdingPhone: null,
+            histogram: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+            chatbotY: 0,
+            phoneSpeed: 2, // pixels per frame
+            phoneDropRate: 2000, // milliseconds
+            gameLoopId: null,
+            phonesCollected: 0,
+            phonesForNextLevel: 10,
+            satisfactionInterval: null // Added to track the interval
+        };
+
+        // Elements
+        const paddle = document.getElementById('paddle');
+        const gameContainer = document.getElementById('game-container');
+        const scoreDisplay = document.getElementById('score');
+        const timeDisplay = document.getElementById('time');
+        const levelMessage = document.getElementById('level-message');
+        const satisfactionMeter = document.getElementById('satisfaction-meter');
+        const satisfactionFill = document.getElementById('satisfaction-fill');
+        const starsDisplay = document.getElementById('stars-display');
+        const histogramContainer = document.getElementById('histogram-container');
+        const chatbotLayer = document.getElementById('chatbot-layer');
+        const futureIdeas = document.getElementById('future-ideas');
+        const restartButton = document.getElementById('restart-button');
+        const startButton = document.getElementById('start-button');
+
+        // Initialize game dimensions
+        function initGameDimensions() {
+            gameState.gameWidth = gameContainer.clientWidth;
+            gameState.gameHeight = gameContainer.clientHeight;
+            gameState.paddleWidth = paddle.clientWidth;
+            gameState.paddleX = (gameState.gameWidth - gameState.paddleWidth) / 2;
+            paddle.style.left = gameState.paddleX + 'px';
+
+            // Set chatbot layer position for level 3
+            gameState.chatbotY = gameState.gameHeight * 0.5;
+            chatbotLayer.style.top = gameState.chatbotY + 'px';
+            chatbotLayer.style.height = '30px';
+        }
+
+        // Show level message
+        function showLevelMessage(message, duration = 3000) {
+            levelMessage.textContent = message;
+            levelMessage.style.display = 'block';
+            setTimeout(() => {
+                levelMessage.style.display = 'none';
+            }, duration);
+        }
+
+        // Update histogram display
+        function updateHistogram() {
+            for (let i = 1; i <= 5; i++) {
+                const count = gameState.histogram[i] || 0;
+                document.getElementById(`count-${i}`).textContent = count;
+                const bar = document.getElementById(`histogram-${i}`);
+                // Scale bar width based on maximum value in histogram
+                const maxCount = Math.max(...Object.values(gameState.histogram), 1);
+                const width = maxCount > 0 ? (count / maxCount) * 100 : 0;
+                bar.style.width = `${width}px`;
+            }
+        }
+
+        // Create floating stars animation
+        function createFloatingStars(x, y, rating) {
+            const star = document.createElement('div');
+            star.className = 'floating-star';
+            star.textContent = '⭐'.repeat(rating);
+            star.style.left = `${x}px`;
+            star.style.top = `${y}px`;
+            gameContainer.appendChild(star);
+
+            // Animate to histogram
+            setTimeout(() => {
+                const targetElement = document.getElementById(`count-${rating}`);
+                const targetRect = targetElement.getBoundingClientRect();
+                const gameRect = gameContainer.getBoundingClientRect();
+                
+                const targetX = targetRect.left - gameRect.left;
+                const targetY = targetRect.top - gameRect.top;
+                
+                star.style.left = `${targetX}px`;
+                star.style.top = `${targetY}px`;
+                star.style.opacity = '0';
+                star.style.scale = '0.5';
+            }, 10);
+
+            // Remove element after animation
+            setTimeout(() => {
+                gameContainer.removeChild(star);
+            }, 1100);
+        }
+
+        // Function to complete phone processing
+        function completePhoneProcessing(phone, rating) {
+            // Clear any ongoing interval
+            if (gameState.satisfactionInterval) {
+                clearInterval(gameState.satisfactionInterval);
+                gameState.satisfactionInterval = null;
+            }
+            
+            // Update histogram with the rating
+            gameState.histogram[rating]++;
+            updateHistogram();
+            
+            // Create animation and add score
+            createFloatingStars(phone.x, phone.y, rating);
+            gameState.score += rating;
+            scoreDisplay.textContent = gameState.score;
+            
+            // Increment phones collected
+            gameState.phonesCollected++;
+            
+            // Check if we should advance to next level
+            if (gameState.phonesCollected >= gameState.phonesForNextLevel) {
+                if (gameState.level === 2) {
+                    startLevel(3);
+                } else if (gameState.level === 3 && gameState.phonesCollected >= gameState.phonesForNextLevel * 2) {
+                    endGame();
+                }
+            }
+            
+            // Play sound
+            playSound(sounds.satisfaction);
+        }
+
+        // Play sound effect
+        function playSound(sound) {
+            try {
+                // Try to play sound if available
+                if (sound && typeof sound.play === 'function') {
+                    sound.play().catch(e => console.log("Sound play failed, but that's ok"));
+                }
+            } catch (e) {
+                // Ignore any sound playing errors
+                console.log("Sound error ignored:", e);
+            }
+        }
+
+        // Handle paddle movement
+        function initPaddleControls() {
+            let isDragging = false;
+            let startX = 0;
+            let startPaddleX = 0;
+
+            function handleTouchStart(e) {
+                e.preventDefault();
+                isDragging = true;
+                startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                startPaddleX = gameState.paddleX;
+            }
+
+            function handleTouchMove(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                const deltaX = x - startX;
+                let newX = startPaddleX + deltaX;
+                
+                // Keep paddle within game boundaries
+                newX = Math.max(0, Math.min(newX, gameState.gameWidth - gameState.paddleWidth));
+                gameState.paddleX = newX;
+                paddle.style.transform = 'translateX(0)'; // Remove the default centering
+                paddle.style.left = newX + 'px';
+            }
+
+            function handleTouchEnd() {
+                isDragging = false;
+            }
+
+            // Add touch and mouse event listeners
+            paddle.addEventListener('touchstart', handleTouchStart, { passive: false });
+            paddle.addEventListener('mousedown', handleTouchStart);
+            
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('mousemove', handleTouchMove);
+            
+            document.addEventListener('touchend', handleTouchEnd);
+            document.addEventListener('mouseup', handleTouchEnd);
+        }
+
+        // Create and drop a phone
+        function createPhone() {
+            if (!gameState.gameActive) return;
+            
+            const phone = document.createElement('div');
+            phone.className = 'phone';
+            phone.textContent = '📱';
+            
+            // Random position along the x-axis
+            const phoneX = Math.floor(Math.random() * (gameState.gameWidth - 40));
+            
+            // Start from top
+            let phoneY = 0;
+            
+            // Set initial position
+            phone.style.left = phoneX + 'px';
+            phone.style.top = phoneY + 'px';
+            
+            // Add to DOM
+            gameContainer.appendChild(phone);
+            
+            // Create phone state object
+            const phoneObj = { 
+                element: phone, 
+                x: phoneX, 
+                y: phoneY, 
+                width: 40, 
+                height: 40,
+                caught: false,
+                satisfaction: 0,
+                satisfactionRate: Math.random() * 3 + 2, // Random rate between 2-5 (faster fill)
+                processed: false
+            };
+            
+            // Add to tracking array
+            gameState.phones.push(phoneObj);
+            
+            // Schedule next phone drop
+            setTimeout(createPhone, gameState.phoneDropRate);
+        }
+
+        // Remove a phone from the game
+        function removePhone(phone) {
+            // Remove from DOM
+            if (phone.element && phone.element.parentNode) {
+                gameContainer.removeChild(phone.element);
+            }
+            
+            // Remove from tracking array
+            const index = gameState.phones.indexOf(phone);
+            if (index > -1) {
+                gameState.phones.splice(index, 1);
+            }
+            
+            // Clear holdingPhone if this is the one being held
+            if (gameState.holdingPhone === phone) {
+                gameState.holdingPhone = null;
+            }
+        }
+
+        // Update game clock - just for display, not for level progression
+        function updateClock() {
+            gameState.timeMinutes += 5; // Each second is 5 minutes (more reasonable pace)
+            if (gameState.timeMinutes >= 60) {
+                gameState.timeMinutes = 0;
+                gameState.timeHours++;
+                if (gameState.timeHours >= 24) {
+                    gameState.timeHours = 0;
+                }
+            }
+            
+            // Format time string (24-hour format)
+            const hours = String(gameState.timeHours).padStart(2, '0');
+            const minutes = String(gameState.timeMinutes).padStart(2, '0');
+            timeDisplay.textContent = `${hours}:${minutes}`;
+        }
+
+        // Start a specific level
+        function startLevel(level) {
+            console.log("Starting level", level);
+            gameState.level = level;
+            
+            switch(level) {
+                case 1:
+                    showLevelMessage("Level 1: Catch the calls!\nCollect 10 calls to advance", 3000);
+                    break;
+                    
+                case 2:
+                    showLevelMessage("Level 2: Hold calls to increase customer satisfaction!\nCollect 10 calls to advance", 3000);
+                    satisfactionMeter.style.display = 'block';
+                    starsDisplay.style.display = 'block';
+                    histogramContainer.style.display = 'block';
+                    // Reset histogram for level 2
+                    gameState.histogram = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+                    updateHistogram();
+                    break;
+                    
+                case 3:
+                    showLevelMessage("Level 3: AI Chatbot is now helping!\nCollect 10 more calls to finish", 3000);
+                    chatbotLayer.style.display = 'flex';
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            // Reset collection counter for the new level
+            gameState.phonesCollected = 0;
+        }
+
+        // End the game
+        function endGame() {
+            gameState.gameActive = false;
+            clearInterval(gameState.clockInterval);
+            cancelAnimationFrame(gameState.gameLoopId);
+            
+            // Clear any satisfaction interval
+            if (gameState.satisfactionInterval) {
+                clearInterval(gameState.satisfactionInterval);
+                gameState.satisfactionInterval = null;
+            }
+            
+            // Clear any remaining phones safely
+            const phonesToRemove = [...gameState.phones];
+            phonesToRemove.forEach(phone => {
+                try {
+                    if (phone.element && phone.element.parentNode) {
+                        phone.element.parentNode.removeChild(phone.element);
+                    }
+                } catch (e) {
+                    console.log("Error removing phone:", e);
+                }
+            });
+            gameState.phones = [];
+            gameState.holdingPhone = null;
+            
+            // Hide game elements
+            satisfactionMeter.style.display = 'none';
+            starsDisplay.style.display = 'none';
+            chatbotLayer.style.display = 'none';
+            
+            // Show end screen
+            showLevelMessage("Day complete! Check out future possibilities.", 0);
+            
+            // Show future ideas
+            setTimeout(() => {
+                levelMessage.style.display = 'none';
+                futureIdeas.style.display = 'block';
+            }, 3000);
+        }
+
+        // Calculate if phone is caught by paddle
+        function isPhoneCaught(phone) {
+            return (
+                phone.y + phone.height >= paddle.offsetTop &&
+                phone.y <= paddle.offsetTop + paddle.offsetHeight &&
+                phone.x + phone.width >= gameState.paddleX &&
+                phone.x <= gameState.paddleX + gameState.paddleWidth
+            );
+        }
+
+        // Calculate if phone is caught by chatbot
+        function isPhoneCaughtByBot(phone) {
+            return (
+                gameState.level === 3 &&
+                phone.y + phone.height >= gameState.chatbotY &&
+                phone.y <= gameState.chatbotY + 30 &&
+                !phone.processed
+            );
+        }
+
+        // Setup satisfaction tracking for a phone
+        function setupSatisfactionTracking(phone) {
+            // Reset satisfaction for new phone
+            gameState.satisfaction = 0;
+            satisfactionFill.style.width = '0%';
+            starsDisplay.textContent = '';
+            
+            // Clear any existing interval
+            if (gameState.satisfactionInterval) {
+                clearInterval(gameState.satisfactionInterval);
+            }
+            
+            // Increase satisfaction over time
+            gameState.satisfactionInterval = setInterval(() => {
+                if (gameState.holdingPhone !== phone || !gameState.gameActive) {
+                    clearInterval(gameState.satisfactionInterval);
+                    gameState.satisfactionInterval = null;
+                    return;
+                }
+                
+                gameState.satisfaction += phone.satisfactionRate;
+                if (gameState.satisfaction >= gameState.satisfactionMax) {
+                    gameState.satisfaction = gameState.satisfactionMax;
+                    clearInterval(gameState.satisfactionInterval);
+                    gameState.satisfactionInterval = null;
+                    
+                    // Calculate stars (1-5 based on time to fill)
+                    const rating = 5;
+                    starsDisplay.textContent = '⭐'.repeat(rating);
+                    
+                    // Complete phone processing
+                    completePhoneProcessing(phone, rating);
+                    
+                    // Reset after a short delay
+                    setTimeout(() => {
+                        if (gameState.holdingPhone === phone) {
+                            removePhone(phone);
+                        }
+                    }, 500);
+                }
+                
+                // Update satisfaction meter
+                const percentage = (gameState.satisfaction / gameState.satisfactionMax) * 100;
+                satisfactionFill.style.width = `${percentage}%`;
+                
+                // Update stars display based on current satisfaction
+                const currentStars = Math.ceil((gameState.satisfaction / gameState.satisfactionMax) * 5);
+                starsDisplay.textContent = '⭐'.repeat(currentStars);
+                
+            }, 100);
+        }
+
+        // Main game loop
+        function gameLoop() {
+            if (!gameState.gameActive) return;
+
+            // Update phone positions
+            for (let i = gameState.phones.length - 1; i >= 0; i--) {
+                const phone = gameState.phones[i];
+                
+                // Skip if this phone is being held
+                if (phone === gameState.holdingPhone) continue;
+                
+                // Move phone down
+                phone.y += gameState.phoneSpeed;
+                phone.element.style.top = phone.y + 'px';
+                
+                // Handle chatbot layer for level 3
+                if (isPhoneCaughtByBot(phone)) {
+                    phone.processed = true;
+                    
+                    // 60% chance of being handled by chatbot
+                    if (Math.random() < 0.6) {
+                        // Generate random satisfaction rating (1-5)
+                        const rating = Math.floor(Math.random() * 5) + 1;
+                        gameState.histogram[rating]++;
+                        updateHistogram();
+                        
+                        // Show stars animation
+                        createFloatingStars(phone.x, phone.y, rating);
+                        
+                        // Play sound and update score
+                        playSound(sounds.satisfaction);
+                        gameState.score += rating;
+                        scoreDisplay.textContent = gameState.score;
+                        
+                        // Increment phones collected
+                        gameState.phonesCollected++;
+                        
+                        // Check if we should advance to next level
+                        if (gameState.phonesCollected >= gameState.phonesForNextLevel * 2 && gameState.level === 3) {
+                            endGame();
+                        }
+                        
+                        // Remove phone
+                        removePhone(phone);
+                        continue;
+                    }
+                }
+                
+                // Check if phone is caught
+                if (!phone.caught && isPhoneCaught(phone)) {
+                    phone.caught = true;
+                    playSound(sounds.catch);
+                    
+                    if (gameState.level === 1) {
+                        // Level 1: Immediately add score and remove
+                        gameState.score++;
+                        scoreDisplay.textContent = gameState.score;
+                        gameState.phonesCollected++;
+                        console.log("Level 1: Phones collected:", gameState.phonesCollected);
+                        
+                        // Check if we should advance to next level
+                        if (gameState.phonesCollected >= gameState.phonesForNextLevel && gameState.level === 1) {
+                            console.log("Advancing to level 2");
+                            startLevel(2);
+                        }
+                        
+                        removePhone(phone);
+                    } else {
+                        // Level 2-3: Handle satisfaction
+                        
+                        // If already holding a phone, complete its processing first
+                        if (gameState.holdingPhone) {
+                            // Calculate current rating based on satisfaction
+                            const currentRating = Math.ceil((gameState.satisfaction / gameState.satisfactionMax) * 5);
+                            // Complete processing of current phone
+                            completePhoneProcessing(gameState.holdingPhone, currentRating);
+                            // Remove the current phone
+                            removePhone(gameState.holdingPhone);
+                        }
+                        
+                        // Now process the new phone
+                        gameState.holdingPhone = phone;
+                        satisfactionMeter.style.display = 'block';
+                        starsDisplay.style.display = 'block';
+                        
+                        // Setup satisfaction tracking for the new phone
+                        setupSatisfactionTracking(phone);
+                    }
+                }
+                
+                // Check if phone is out of bounds
+                if (phone.y > gameState.gameHeight) {
+                    // Miss penalty
+                    playSound(sounds.miss);
+                    
+                    if (gameState.level >= 2) {
+                        // Add 1-star rating to histogram for missed calls
+                        gameState.histogram[1]++;
+                        updateHistogram();
+                        // Show animation
+                        createFloatingStars(phone.x, phone.y - 50, 1);
+                    }
+                    
+                    removePhone(phone);
+                }
+            }
+            
+            // Update the position of the held phone
+            if (gameState.holdingPhone) {
+                gameState.holdingPhone.x = gameState.paddleX + (gameState.paddleWidth / 2) - (gameState.holdingPhone.width / 2);
+                gameState.holdingPhone.y = paddle.offsetTop - gameState.holdingPhone.height;
+                gameState.holdingPhone.element.style.left = gameState.holdingPhone.x + 'px';
+                gameState.holdingPhone.element.style.top = gameState.holdingPhone.y + 'px';
+            }
+            
+            // Continue the game loop
+            gameState.gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        function startGame() {
+            // Initialize game state
+            gameState.score = 0;
+            gameState.timeHours = 8;
+            gameState.timeMinutes = 0;
+            gameState.level = 0;
+            gameState.phones = [];
+            gameState.holdingPhone = null;
+            gameState.gameActive = true;
+            gameState.histogram = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+            
+            // Reset UI
+            scoreDisplay.textContent = '0';
+            timeDisplay.textContent = '08:00';
+            satisfactionMeter.style.display = 'none';
+            starsDisplay.style.display = 'none';
+            histogramContainer.style.display = 'none';
+            chatbotLayer.style.display = 'none';
+            futureIdeas.style.display = 'none';
+            startButton.style.display = 'none';
+            
+            // Start level 1
+            startLevel(1);
+            
+            // Reset phones collected counter
+            gameState.phonesCollected = 0;
+            
+            // Start clock
+            gameState.clockInterval = setInterval(updateClock, 1000);
+            
+            // Start dropping phones
+            createPhone();
+            
+            // Start game loop
+            gameLoop();
+        }
+
+        // Initialize the game
+        function init() {
+            // Set up game dimensions
+            initGameDimensions();
+            
+            // Set up paddle controls
+            initPaddleControls();
+            
+            // Add event listener for start button
+            startButton.addEventListener('click', startGame);
+            
+            // Add event listener for restart button
+            restartButton.addEventListener('click', () => {
+                futureIdeas.style.display = 'none';
+                startGame();
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                initGameDimensions();
+            });
+        }
+
+        // Start the game when page loads
+        window.addEventListener('load', init);
+
+        // Sound effects (basic placeholders that work on most devices)
+        const sounds = {
+            catch: { play: function() { return Promise.resolve(); } },
+            miss: { play: function() { return Promise.resolve(); } },
+            level: { play: function() { return Promise.resolve(); } },
+            satisfaction: { play: function() { return Promise.resolve(); } },
+            cloneNode: function() { return this; },
+            volume: 0.3
+        };
+    </script>
+</body>
+</html>
