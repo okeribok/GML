@@ -393,9 +393,10 @@
             }, 10);
 
             // Remove element after animation
+            starsDisplay.textContent = '';
             setTimeout(() => {
                 gameContainer.removeChild(star);
-            }, 100);
+            }, 1100);
         }
 
         // Function to complete phone processing
@@ -574,7 +575,7 @@
                     break;
                     
                 case 2:
-                    showLevelMessage("Level 2: Hold calls to increase customer satisfaction!\nCollect 10 calls to advance", 5000);
+                    showLevelMessage("Level 2: Hold calls to increase customer satisfaction!\nCollect 5 calls to advance", 5000);
                     satisfactionMeter.style.display = 'block';
                     starsDisplay.style.display = 'block';
                     histogramContainer.style.display = 'block';
@@ -584,7 +585,7 @@
                     break;
                     
                 case 3:
-                    showLevelMessage("Level 3: AI Chatbot is now helping!\nCollect 10 more calls to finish", 5000);
+                    showLevelMessage("Level 3: AI Chatbot is now helping!\nCollect 5 more calls to finish", 5000);
                     chatbotLayer.style.display = 'flex';
                     break;
                     
