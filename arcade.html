@@ -312,7 +312,7 @@
             phoneDropRate: 2000, // milliseconds
             gameLoopId: null,
             phonesCollected: 0,
-            phonesForNextLevel: 10,
+            phonesForNextLevel: 5,
             satisfactionInterval: null // Added to track the interval
         };
 
@@ -569,11 +569,11 @@
             
             switch(level) {
                 case 1:
-                    showLevelMessage("Level 1: Catch the calls!\nCollect 10 calls to advance", 3000);
+                    showLevelMessage("Level 1: Drag the team to catch the calls!\nCollect 5 calls to advance", 4000);
                     break;
                     
                 case 2:
-                    showLevelMessage("Level 2: Hold calls to increase customer satisfaction!\nCollect 10 calls to advance", 3000);
+                    showLevelMessage("Level 2: Hold calls to increase customer satisfaction!\nCollect 10 calls to advance", 5000);
                     satisfactionMeter.style.display = 'block';
                     starsDisplay.style.display = 'block';
                     histogramContainer.style.display = 'block';
@@ -583,7 +583,7 @@
                     break;
                     
                 case 3:
-                    showLevelMessage("Level 3: AI Chatbot is now helping!\nCollect 10 more calls to finish", 3000);
+                    showLevelMessage("Level 3: AI Chatbot is now helping!\nCollect 10 more calls to finish", 5000);
                     chatbotLayer.style.display = 'flex';
                     break;
                     
